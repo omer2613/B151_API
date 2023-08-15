@@ -5,6 +5,9 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.Test;
+import org.testng.asserts.SoftAssert;
+
+import java.util.ResourceBundle;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -64,6 +67,7 @@ public class Get06 extends HerokuAppBaseUrl {
         //bookingdates'ten sonra . koyup bookingdates body sine girerek checkin  degerini kontrol edebiliriz
 
         // 2. yol
+        //json da datamizi String'e Int'e List'e vs. cevirip ilerde get islemlerinde ve dogrulama yaparken kullanabiliriz
         JsonPath json = response.jsonPath(); // response jsonPath() metodu kullnarak jsonPath data tipine dönüştürdük
                                             //jsonPath datasından response da datalara kolayca ulaşabiliriz.
         System.out.println(json.getString("firstname")); // jsonPath() sayesinde istediğimiz datayı getirebiliriz
@@ -75,5 +79,19 @@ public class Get06 extends HerokuAppBaseUrl {
         assertEquals("2018-01-01", json.getString("bookingdates.checkin"));
         assertEquals("2019-01-01", json.getString("bookingdates.checkout"));
         assertEquals("Breakfast", json.getString("additionalneeds"));
+
+        //3.YOL SOFT ASSERTİON//Soft asserts TestNg ile gelen bir ozellik oldugu icin TestNg pom'a yuklenmeli
+
+        SoftAssert softAssert = new SoftAssert();
+        ResourceBundle jsonPath;
+        softAssert.assertEquals(json.getString("firstname"),"John");
+        softAssert.assertEquals(json.getString("lastname"),"Smith");
+        softAssert.assertEquals(json.getInt("totalprice"),111);
+        softAssert.assertTrue(json.getBoolean("depositpaid"));
+        softAssert.assertEquals(json.getString("bookingdates.checkin"),"2018-01-01");
+        softAssert.assertEquals(json.getString("bookingdates.checkout"),"2019-01-01");
+        softAssert.assertEquals(json.getString("additionalneeds"),"Breakfast");
+        softAssert.assertAll();
+
     }
 }
